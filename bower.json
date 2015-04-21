@@ -1,0 +1,24 @@
+{
+  "name": "mediator",
+  "version": "0.1",
+  "homepage": "https://github.com/gtournie/mediator",
+  "authors": [
+    "Guillaume Tournier <tournier.guillaume@gmail.com>"
+  ],
+  "description": "Implements a single object that becomes a shared resource through all of the different pieces of an application.",
+  "main": "src/mediator.js",
+  "keywords": [
+    "js",
+    "mediator",
+    "event",
+    "shared",
+    "resource",
+    "trigger",
+    "on",
+    "off"
+  ],
+  "license": "MIT",
+  "ignore": [
+    ".md"
+  ]
+}
