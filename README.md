@@ -3,7 +3,7 @@ Mediator Lib
 
 ### Mediator pattern ###
 
-Implements a single object that becomes a shared resource through all of the different pieces of an application.
+Very small lib which implements a single object that becomes a shared resource through all of the different pieces of an application.
 
 ### Installation ###
 
