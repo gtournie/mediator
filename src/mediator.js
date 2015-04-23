@@ -2,8 +2,12 @@
 var Mediator = (function() {
   "use strict";
 
+  var toString = Object.prototype.toString;
+
   return {
     events: {},
+    defaultMemo: {},
+    memoAsSecondArg: false,
 
     // Observe one or multiple eventNames.
     // eventNames: a list of space-separated event names
@@ -14,7 +18,7 @@ var Mediator = (function() {
         return this;
       }
       var events = this.events,
-          args = arguments;
+          args   = arguments;
       forEachEventName(eventNames, function(eventName) {
         if (!events[eventName]) {
           events[eventName] = [];
@@ -38,7 +42,7 @@ var Mediator = (function() {
         return this;
       }
       var events = this.events,
-          args = arguments;
+          args   = arguments;
       if (1 === argLen) {
         forEachEventName(eventNames, function(eventName) {
           delete events[eventName];
@@ -66,11 +70,29 @@ var Mediator = (function() {
       if (!eventNames) {
         return this;
       }
-      var events = this.events;
+      var defaultMemo = this.defaultMemo;
+      if (arguments.length < 2) {
+        memo = defaultMemo;
+      } else {
+        if ('[object Object]' === toString.call(memo) &&
+            '[object Object]' === toString.call(defaultMemo)) {
+          for (var prop in defaultMemo) {
+            if (!(prop in memo)) {
+              memo[prop] = defaultMemo[prop];
+            }
+          }
+        }
+      }
+      var events = this.events,
+          memoAsSecondArg = this.memoAsSecondArg;
       forEachEventName(eventNames, function(eventName) {
         var list = events[eventName] || [];
         for (var i = 0, len = list.length; i < len; ++i) {
-          list[i](memo);
+          if (memoAsSecondArg) {
+            list[i](null, memo);
+          } else {
+            list[i](memo);
+          }
         }
       });
       return this;
