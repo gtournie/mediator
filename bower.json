@@ -1,6 +1,6 @@
 {
   "name": "mediator",
-  "version": "0.2",
+  "version": "0.1",
   "homepage": "https://github.com/gtournie/mediator",
   "authors": [
     "Guillaume Tournier <tournier.guillaume@gmail.com>"
@@ -15,7 +15,10 @@
     "resource",
     "trigger",
     "on",
-    "off"
+    "off",
+    "pub",
+    "sub",
+    "pull"
   ],
   "license": "MIT",
   "ignore": [

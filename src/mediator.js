@@ -1,27 +1,34 @@
-
 var Mediator = (function() {
   "use strict";
 
+  var toString       = ({}).toString,
+      hasOwnProperty = ({}).hasOwnProperty;
+
   return {
     events: {},
+    defaultMemo: {},
+    memoAsSecondArg: false,
 
     // Observe one or multiple eventNames.
     // eventNames: a list of space-separated event names
-    // [func1, func2...]: a list of functions
+    // [func1, func2...]: a list of handlers
     on: function(eventNames) {
       var argLen = arguments.length;
       if (!eventNames || argLen < 2) {
         return this;
       }
       var events = this.events,
-          args = arguments;
+          args   = arguments;
       forEachEventName(eventNames, function(eventName) {
         if (!events[eventName]) {
           events[eventName] = [];
         }
-        var list = events[eventName];
+        var list = events[eventName], arg;
         for (var i = 1; i < argLen; ++i) {
-          list.push(args[i]);
+          arg = args[i];
+          if ('function' === typeof arg) {
+            list.push(arg);
+          }
         }
       });
       return this;
@@ -38,7 +45,7 @@ var Mediator = (function() {
         return this;
       }
       var events = this.events,
-          args = arguments;
+          args   = arguments;
       if (1 === argLen) {
         forEachEventName(eventNames, function(eventName) {
           delete events[eventName];
@@ -46,10 +53,11 @@ var Mediator = (function() {
       } else {
         forEachEventName(eventNames, function(eventName) {
           var list = events[eventName] || [], j;
-          for (var i = list.length - 1; i >= 0; --i) {
-            for (j = 1; j < argLen; ++j) {
-              if (args[j] === list[i]) {
-                list.splice(i, 1);
+          for (var i = 1; i < argLen; ++i) {
+            j = list.length;
+            while(j--) {
+              if (args[i] === list[j]) {
+                list.splice(j, 1);
               }
             }
           }
@@ -61,16 +69,34 @@ var Mediator = (function() {
       return this;
     },
 
-    // Call all "eventName" events. Give memo as first argument
+    // Call all "eventName" handlers. Give memo in argument.
     trigger: function(eventNames, memo) {
       if (!eventNames) {
         return this;
       }
-      var events = this.events;
+      var defaultMemo = this.defaultMemo;
+      if (arguments.length < 2) {
+        memo = defaultMemo;
+      } else {
+        if ('[object Object]' === toString.call(memo) &&
+            '[object Object]' === toString.call(defaultMemo)) {
+          for (var prop in defaultMemo) {
+            if (!hasOwnProperty.call(memo, prop)) {
+              memo[prop] = defaultMemo[prop];
+            }
+          }
+        }
+      }
+      var events = this.events,
+          memoAsSecondArg = this.memoAsSecondArg;
       forEachEventName(eventNames, function(eventName) {
         var list = events[eventName] || [];
         for (var i = 0, len = list.length; i < len; ++i) {
-          list[i](memo);
+          if (memoAsSecondArg) {
+            list[i](null, memo);
+          } else {
+            list[i](memo);
+          }
         }
       });
       return this;
